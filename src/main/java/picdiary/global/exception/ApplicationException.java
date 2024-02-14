@@ -8,7 +8,7 @@ import picdiary.global.exception.ErrorCode;
 public class ApplicationException extends RuntimeException {
     private final ErrorCode errorCode;
 
-    ApplicationException(ErrorCode errorCode) {
+    public ApplicationException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }
