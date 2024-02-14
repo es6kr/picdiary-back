@@ -1,0 +1,23 @@
+spring:
+  # MySQL 데이터베이스 설정
+  datasource:
+    url: jdbc:mysql://localhost:3306/diary?allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&useSSL=false
+    username: root
+    password: 2802
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  # Flyway 설정
+  flyway:
+    locations: classpath:db.migration
+  # JPA 설정
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+# 로깅 설정
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
