@@ -30,7 +30,7 @@ public class DefaultUserInitializer implements CommandLineRunner {
         if (result.isEmpty()) {
             UserEntity user = new UserEntity();
             user.setEmail(email);
-            return userRepository.save(user);
+            return user;
         }
         return result.get();
     }

@@ -1,0 +1,10 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  # MySQL 데이터베이스 설정
+  datasource:
+    url: jdbc:mysql://localhost:3306/diary?allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&useSSL=false
+    username: root
+    password: 2802
+    driver-class-name: com.mysql.cj.jdbc.Driver
