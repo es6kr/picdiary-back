@@ -3,14 +3,14 @@ package picdiary.diary.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import picdiary.diary.controller.dto.request.DiaryCreateRequest;
-import picdiary.diary.controller.dto.request.DiaryUpdateRequest;
-import picdiary.diary.controller.dto.response.GetDiaryResponse;
+import picdiary.diary.dto.request.DiaryCreateRequest;
+import picdiary.diary.dto.request.DiaryUpdateRequest;
+import picdiary.diary.dto.response.GetDiaryResponse;
 import picdiary.diary.exception.DiaryErrorCode;
 import picdiary.diary.repository.DiaryEntity;
+import picdiary.diary.repository.DiaryJpaRepository;
 import picdiary.global.exception.ApplicationException;
 import picdiary.user.exception.UserErrorCode;
-import picdiary.user.repository.DiaryJpaRepository;
 import picdiary.user.repository.UserEntity;
 import picdiary.user.repository.UserJpaRepository;
 
@@ -22,7 +22,6 @@ import java.time.format.DateTimeFormatter;
 @Transactional
 public class DiaryServiceImpl implements DiaryService {
 
-    private final DiaryJpaRepository diaryJpaRepository;
     private final UserJpaRepository userRepository;
     private final DiaryJpaRepository diaryRepository;
 
@@ -52,7 +51,7 @@ public class DiaryServiceImpl implements DiaryService {
                 localDate.atStartOfDay(),
                 savedUser
         );
-        return diaryJpaRepository.save(diaryEntity).getId();
+        return diaryRepository.save(diaryEntity).getId();
     }
 
     /**
@@ -94,7 +93,7 @@ public class DiaryServiceImpl implements DiaryService {
         DiaryEntity savedDiary = findDiaryById(diaryId);
 
         savedDiary.validateUserIsWriter(savedUser);
-        diaryJpaRepository.deleteById(savedDiary.getId());
+        diaryRepository.deleteById(savedDiary.getId());
     }
 
     private UserEntity findUserById(Long userId) {

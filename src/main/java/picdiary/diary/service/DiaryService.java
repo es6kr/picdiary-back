@@ -1,8 +1,8 @@
 package picdiary.diary.service;
 
-import picdiary.diary.controller.dto.request.DiaryCreateRequest;
-import picdiary.diary.controller.dto.request.DiaryUpdateRequest;
-import picdiary.diary.controller.dto.response.GetDiaryResponse;
+import picdiary.diary.dto.request.DiaryCreateRequest;
+import picdiary.diary.dto.request.DiaryUpdateRequest;
+import picdiary.diary.dto.response.GetDiaryResponse;
 import org.springframework.stereotype.Service;
 
 @Service

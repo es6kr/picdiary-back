@@ -1,4 +1,4 @@
-package picdiary.user.repository;
+package picdiary.diary.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import picdiary.diary.repository.DiaryEntity;

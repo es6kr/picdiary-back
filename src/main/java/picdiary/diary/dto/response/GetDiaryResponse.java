@@ -1,4 +1,4 @@
-package picdiary.diary.controller.dto.response;
+package picdiary.diary.dto.response;
 
 import java.time.LocalDateTime;
 

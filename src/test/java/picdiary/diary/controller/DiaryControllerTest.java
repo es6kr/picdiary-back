@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import picdiary.diary.controller.dto.request.DiaryCreateRequest;
+import picdiary.diary.dto.request.DiaryCreateRequest;
 import picdiary.global.dto.response.ApplicationResponse;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
