@@ -8,3 +8,6 @@ spring:
     username: ${DB_USER}
     password: ${DB_PASS}
     driver-class-name: org.mariadb.jdbc.Driver
+
+swagger:
+  url: https://diary.es6.kr
