@@ -10,7 +10,8 @@ import picdiary.global.exception.ApplicationException;
 import picdiary.global.repository.BaseEntity;
 import picdiary.user.repository.UserEntity;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+
 @Getter
 @Entity
 @Table(name = "diary")
@@ -26,15 +27,19 @@ public class DiaryEntity extends BaseEntity {
     private String content; // 일기 내용
 
     @Column
-    private LocalDateTime date; // 캘린더 설정 날짜
+    private LocalDate date; // 캘린더 설정 날짜
+
+    @Column
+    private String imageFileName;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user; // 일기 작성자
 
-    public DiaryEntity(String content, LocalDateTime date, UserEntity user) {
+    public DiaryEntity(String content, LocalDate date, String imageFileName, UserEntity user) {
         this.content = content;
         this.date = date;
+        this.imageFileName = imageFileName;
         this.user = user;
     }
 

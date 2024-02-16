@@ -24,12 +24,16 @@ public class DiaryServiceImpl implements DiaryService {
 
     private final UserJpaRepository userRepository;
     private final DiaryJpaRepository diaryRepository;
+    private final S3Service s3Service;
+
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     private GetDiaryResponse result(DiaryEntity diary) {
         return new GetDiaryResponse(
                 diary.getId(),
                 diary.getContent(),
-                diary.getDate()
+                diary.getDate().format(formatter),
+                s3Service.getUrl(diary.getImageFileName())
         );
     }
 
@@ -38,17 +42,15 @@ public class DiaryServiceImpl implements DiaryService {
      */
     @Override
     public Long createDiary(Long userId, DiaryCreateRequest request) {
-
-        // Long 값을 "yyyyMMdd" 형식의 날짜 문자열로 변환
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        String dateString = String.valueOf(request.date());
+        String dateString = String.valueOf(request.getDate());
         LocalDate localDate = LocalDate.parse(dateString, formatter);
 
         UserEntity savedUser = findUserById(userId);
 
         DiaryEntity diaryEntity = new DiaryEntity(
-                request.content(),
-                localDate.atStartOfDay(),
+                request.getContent(),
+                localDate,
+                request.getImageFileName(),
                 savedUser
         );
         return diaryRepository.save(diaryEntity).getId();
@@ -59,8 +61,6 @@ public class DiaryServiceImpl implements DiaryService {
      */
     @Override
     public GetDiaryResponse getDiaryInfo(Long userId, String date) {
-        // Long 값을 "yyyyMMdd" 형식의 날짜 문자열로 변환
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         String dateString = String.valueOf(date);
         LocalDate localDate = LocalDate.parse(dateString, formatter);
 

@@ -1,6 +1,6 @@
 package picdiary.diary.dto.response;
 
-import java.time.LocalDateTime;
+import java.net.URL;
 
-public record GetDiaryResponse(Long diaryId, String content, LocalDateTime date) {
+public record GetDiaryResponse(Long diaryId, String content, String date, URL imageUrl) {
 }

@@ -6,15 +6,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import picdiary.diary.dto.request.DiaryCreateRequest;
+import picdiary.diary.service.DiaryService;
+import picdiary.diary.service.S3Service;
 import picdiary.global.dto.response.ApplicationResponse;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -23,6 +26,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class DiaryControllerTest {
     @Autowired
     private MockMvc mockMvc;
+    @MockBean
+    private DiaryService diaryService;
+    @MockBean
+    private S3Service s3Service;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -35,11 +42,12 @@ public class DiaryControllerTest {
         var typeReference = new TypeReference<ApplicationResponse<Long>>() {
         };
 
-        var request = new DiaryCreateRequest("단위테스트", date);
-        var bytes = objectMapper.writeValueAsBytes(request);
-        var requestBuilder = post("/diaries").content(bytes).contentType("application/json").headers(headers);
+        // Mocking MultipartFile
+        MockMultipartFile file = new MockMultipartFile("imageFile", "test.jpg", MediaType.IMAGE_JPEG_VALUE, "test image data".getBytes());
+
+        var requestBuilder = multipart("/diaries").file(file).param("content", "Test content").param("date", "2024-02-16").headers(headers);
         var actions = mockMvc.perform(requestBuilder).andExpect(status().isOk()).andReturn();
-        bytes = actions.getResponse().getContentAsByteArray();
+        var bytes = actions.getResponse().getContentAsByteArray();
         var diaryId = objectMapper.readValue(bytes, typeReference).getData();
         assertNotNull(diaryId);
 

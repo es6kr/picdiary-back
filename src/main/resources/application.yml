@@ -1,3 +1,15 @@
+aws:
+  s3:
+    bucket: picdiarystudy
+  credentials:
+    access-key: AKIARUDZFJZUKV7BPD4J
+    secret-key: ${S3_ACCESS_SECRET}
+  region:
+    static: ap-northeast-2
+    auto: false
+  stack:
+    auto: false
+
 spring:
   profiles:
     active: local

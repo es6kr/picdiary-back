@@ -22,6 +22,10 @@ public final class ApplicationResponse<T> {
         return ResponseEntity.ok(new ApplicationResponse<>(data, message, code));
     }
 
+    public static <V> ResponseEntity<ApplicationResponse<V>> error(String message, String code) {
+        return ResponseEntity.internalServerError().body(new ApplicationResponse<>(null, message, code));
+    }
+
     public static ResponseEntity<ApplicationResponse<Long>> success(Long id, String message) {
         return data(id, message, null);
     }

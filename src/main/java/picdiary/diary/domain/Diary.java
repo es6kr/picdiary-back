@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
  * @param updatedAt 일기 수정 일자
  * @param emotion   일기의 감정
  *
- * @param imgSource 사진
+ * @param imageFileName 사진
  */
 public record Diary(Long diaryId, Long userId, LocalDateTime date, String content, LocalDateTime createdAt,
-                    LocalDateTime updatedAt, Diary.Emotion emotion, String imgSource) {
+                    LocalDateTime updatedAt, Diary.Emotion emotion, String imageFileName) {
     // 감정을 나타내는 열거형
     public enum Emotion {
         HAPPY,
