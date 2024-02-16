@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import picdiary.global.exception.ApplicationException;
+import picdiary.global.repository.BaseEntity;
 import picdiary.user.repository.UserEntity;
 
 import java.time.LocalDateTime;

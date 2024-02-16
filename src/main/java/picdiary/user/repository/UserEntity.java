@@ -3,7 +3,7 @@ package picdiary.user.repository;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import picdiary.diary.repository.BaseEntity;
+import picdiary.global.repository.BaseEntity;
 
 @Data
 @Entity
