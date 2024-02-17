@@ -16,5 +16,5 @@ CREATE TABLE IF NOT EXISTS ToDo (
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
   diary_id BIGINT NOT NULL,
-  FOREIGN KEY (diary_id) REFERENCES Diary(id)
+  FOREIGN KEY (diary_id) REFERENCES diary(id)
 );

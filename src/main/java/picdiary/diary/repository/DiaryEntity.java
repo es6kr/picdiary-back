@@ -1,5 +1,7 @@
 package picdiary.diary.repository;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -7,14 +9,16 @@ import lombok.NoArgsConstructor;
 import picdiary.diary.exception.DiaryErrorCode;
 import picdiary.global.exception.ApplicationException;
 import picdiary.global.repository.BaseEntity;
+import picdiary.todo.repository.ToDoEntity;
 import picdiary.user.repository.UserEntity;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Inheritance(strategy = InheritanceType.JOINED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "diary", uniqueConstraints = {@UniqueConstraint(columnNames = {"date", "user_id"})})
 public class DiaryEntity extends BaseEntity {
 
@@ -34,6 +38,9 @@ public class DiaryEntity extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user; // 일기 작성자
+
+    @OneToMany(mappedBy = "diary")
+    private List<ToDoEntity> toDoList;
 
     public DiaryEntity(String content, LocalDate date, String imageFileName, UserEntity user) {
         this.content = content;
