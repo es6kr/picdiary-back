@@ -43,13 +43,13 @@ public class DiaryEntity extends BaseEntity {
         this.user = user;
     }
 
-    public void diaryUpdate(UserEntity user, String content) {
-        validateUserIsWriter(user);
+    public void diaryUpdate(long userId, String content) {
+        validateUserIsWriter(userId);
         this.content = content;
     }
 
-    public void validateUserIsWriter(UserEntity user) {
-        if (!this.user.isWriter(user)) {
+    public void validateUserIsWriter(long userId) {
+        if (!this.user.isWriter(userId)) {
             throw new ApplicationException(DiaryErrorCode.IS_NOT_WRITER);
         }
     }

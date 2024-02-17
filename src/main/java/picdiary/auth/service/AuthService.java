@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import picdiary.auth.dto.LoginRequest;
+import picdiary.auth.dto.AuthRequest;
 import picdiary.user.repository.UserEntity;
 import picdiary.user.repository.UserJpaRepository;
 
@@ -16,7 +16,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserJpaRepository userRepository;
 
-    public UserEntity createUser(LoginRequest request) {
+    public UserEntity createUser(AuthRequest request) {
         UserEntity newUser = findOrCreate(request.email());
         newUser.setPassword(passwordEncoder.encode(request.password()));
         return userRepository.save(newUser);

@@ -21,8 +21,8 @@ public class UserEntity extends BaseEntity {
     @Column
     private String password; // 사용자 암호
 
-    public boolean isWriter(UserEntity user) {
-        return id.equals(user.id);
+    public boolean isWriter(long userId) {
+        return id.equals(userId);
     }
 
 }
