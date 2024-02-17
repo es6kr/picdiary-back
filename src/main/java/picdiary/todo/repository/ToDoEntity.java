@@ -1,5 +1,6 @@
 package picdiary.todo.repository;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,8 +25,9 @@ public class ToDoEntity extends BaseEntity {
     private String content;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "diary_id")
-    private DiaryEntity diary; // 일기 작성자
+    private DiaryEntity diary;
 
     public ToDoEntity(String content, DiaryEntity diary) {
         this.content = content;

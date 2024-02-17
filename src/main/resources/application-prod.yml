@@ -10,4 +10,4 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
 
 swagger:
-  url: https://diary.es6.kr
+  url: ${BASE_URL}

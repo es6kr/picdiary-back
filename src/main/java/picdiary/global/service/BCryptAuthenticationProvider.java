@@ -33,7 +33,7 @@ public class BCryptAuthenticationProvider implements AuthenticationProvider {
             throw new BadCredentialsException(username);
         }
         
-        return new UsernamePasswordAuthenticationToken(user, password, user.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(user.userEntity(), password, user.getAuthorities());
     }
 
     private boolean matchPassword(String rawPassword, String password) {
