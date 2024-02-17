@@ -35,6 +35,7 @@ public class DiaryService {
         DiaryEntity diaryEntity = new DiaryEntity(
                 request.getContent(),
                 localDate,
+                request.getEmotion(),
                 request.getImageFileName(),
                 savedUser
         );
@@ -59,7 +60,7 @@ public class DiaryService {
     public DiaryEntity updateDiary(Long userId, Long diaryId, DiaryUpdateRequest request) {
         DiaryEntity savedDiary = findDiaryById(diaryId);
 
-        savedDiary.diaryUpdate(userId, request.content());
+        savedDiary.diaryUpdate(userId, request.content(), request.emotion());
         return diaryRepository.save(savedDiary);
     }
 

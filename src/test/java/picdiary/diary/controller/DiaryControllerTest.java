@@ -39,6 +39,7 @@ public class DiaryControllerTest {
     public void testDiary() throws Exception {
         var content = "Test content";
         var date = "20240214";
+        var emotion = "CALM";
         var fileName = "test.jpg";
         var headers = new HttpHeaders();
         var userId = 1L;
@@ -54,7 +55,7 @@ public class DiaryControllerTest {
         Mockito.when(s3Service.getUrl(Mockito.anyString())).thenReturn(imageUrl);
         Mockito.when(s3Service.saveFile(Mockito.anyString(), Mockito.any())).thenReturn(imageFileName);
 
-        var requestBuilder = multipart("/diaries").file(file).param("content", content).param("date", date).headers(headers);
+        var requestBuilder = multipart("/diaries").file(file).param("content", content).param("date", date).param("emotion", emotion).headers(headers);
         var actions = mockMvc.perform(requestBuilder).andExpect(status().isOk()).andReturn();
         var bytes = actions.getResponse().getContentAsByteArray();
         var diaryId = objectMapper.readValue(bytes, typeReference).getData();

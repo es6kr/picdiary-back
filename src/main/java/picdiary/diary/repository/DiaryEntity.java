@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import picdiary.diary.domain.Diary;
 import picdiary.diary.exception.DiaryErrorCode;
 import picdiary.global.exception.ApplicationException;
 import picdiary.global.repository.BaseEntity;
@@ -31,7 +32,9 @@ public class DiaryEntity extends BaseEntity {
 
     @Column
     private LocalDate date; // 캘린더 설정 날짜
-
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Diary.Emotion emotion; // 감정
     @Column
     private String imageFileName;
 
@@ -42,16 +45,18 @@ public class DiaryEntity extends BaseEntity {
     @OneToMany(mappedBy = "diary")
     private List<ToDoEntity> toDoList;
 
-    public DiaryEntity(String content, LocalDate date, String imageFileName, UserEntity user) {
+    public DiaryEntity(String content, LocalDate date, Diary.Emotion emotion, String imageFileName, UserEntity user) {
         this.content = content;
         this.date = date;
+        this.emotion = emotion;
         this.imageFileName = imageFileName;
         this.user = user;
     }
 
-    public void diaryUpdate(long userId, String content) {
+    public void diaryUpdate(long userId, String content, Diary.Emotion emotion) {
         validateUserIsWriter(userId);
         this.content = content;
+        this.emotion = emotion;
     }
 
     public void validateUserIsWriter(long userId) {

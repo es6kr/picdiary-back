@@ -1,4 +1,6 @@
 package picdiary.diary.dto.request;
 
-public record DiaryUpdateRequest(String content, boolean flag) {
+import picdiary.diary.domain.Diary;
+
+public record DiaryUpdateRequest(String content, Diary.Emotion emotion) {
 }

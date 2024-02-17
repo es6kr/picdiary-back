@@ -2,6 +2,7 @@ package picdiary.diary.controller;
 
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
+import picdiary.diary.domain.Diary;
 import picdiary.diary.dto.request.DiaryCreateRequest;
 import picdiary.diary.dto.request.DiaryUpdateRequest;
 import picdiary.diary.dto.response.GetDiaryResponse;
@@ -32,9 +33,9 @@ public class DiaryController {
      * 다이어리 작성
      */
     @PostMapping
-    public ResponseEntity<ApplicationResponse<Long>> createDiary(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam("imageFile") MultipartFile file, @RequestParam("content") String content, @RequestParam("date") String date) {
+    public ResponseEntity<ApplicationResponse<Long>> createDiary(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam("imageFile") MultipartFile file, @RequestParam("content") String content, @RequestParam("date") String date, @RequestParam("emotion") Diary.Emotion emotion) {
         Assert.notNull(userDetails, "로그인이 필요합니다.");
-        DiaryCreateRequest.DiaryCreateRequestBuilder builder = DiaryCreateRequest.builder().content(content).date(date);
+        DiaryCreateRequest.DiaryCreateRequestBuilder builder = DiaryCreateRequest.builder().content(content).date(date).emotion(emotion);
 
         /* AWS S3 파일 저장 */
         if (file != null) try {
@@ -56,7 +57,7 @@ public class DiaryController {
     public GetDiaryResponse getDiaryInfo(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable("date") String date) {
         Assert.notNull(userDetails, "로그인이 필요합니다.");
         DiaryEntity diary = diaryService.getDiary(userDetails.userEntity().getId(), date);
-        return new GetDiaryResponse(diary.getId(), diary.getContent(), diary.getDate().format(formatter), s3Service.getUrl(diary.getImageFileName()));
+        return new GetDiaryResponse(diary.getId(), diary.getContent(), diary.getDate().format(formatter), diary.getEmotion(), s3Service.getUrl(diary.getImageFileName()));
     }
 
     /**
