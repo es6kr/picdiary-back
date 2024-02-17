@@ -34,21 +34,18 @@ public class DiaryController {
     @PostMapping
     public ResponseEntity<ApplicationResponse<Long>> createDiary(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam("imageFile") MultipartFile file, @RequestParam("content") String content, @RequestParam("date") String date) {
         Assert.notNull(userDetails, "로그인이 필요합니다.");
+        DiaryCreateRequest.DiaryCreateRequestBuilder builder = DiaryCreateRequest.builder().content(content).date(date);
 
-        // 파일 저장
-        String fileName = null;
-        try {
+        /* AWS S3 파일 저장 */
+        if (file != null) try {
             String prefix = String.format("%s/%s", userDetails.userEntity().getId(), date);
-            fileName = s3Service.saveFile(prefix, file);
+            builder.imageFileName(s3Service.saveFile(prefix, file));
         } catch (IOException e) {
             // 파일 저장 중 오류 발생 시 처리
             return ApplicationResponse.error("파일 저장 중 오류가 발생했습니다.", null);
         }
 
-        // 다이어리 생성
-        DiaryCreateRequest request = DiaryCreateRequest.builder().content(content).date(date).imageFileName(fileName).build();
-
-        Long diaryId = diaryService.createDiary(userDetails.userEntity().getId(), request);
+        Long diaryId = diaryService.createDiary(userDetails.userEntity().getId(), builder.build());
         return ApplicationResponse.success(diaryId, "다이어리가 생성되었습니다.");
     }
 
@@ -59,12 +56,7 @@ public class DiaryController {
     public GetDiaryResponse getDiaryInfo(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable("date") String date) {
         Assert.notNull(userDetails, "로그인이 필요합니다.");
         DiaryEntity diary = diaryService.getDiary(userDetails.userEntity().getId(), date);
-        return new GetDiaryResponse(
-            diary.getId(),
-            diary.getContent(),
-            diary.getDate().format(formatter),
-            s3Service.getUrl(diary.getImageFileName())
-        );
+        return new GetDiaryResponse(diary.getId(), diary.getContent(), diary.getDate().format(formatter), s3Service.getUrl(diary.getImageFileName()));
     }
 
     /**

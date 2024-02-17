@@ -2,7 +2,6 @@ package picdiary.diary.repository;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import picdiary.diary.exception.DiaryErrorCode;
@@ -14,9 +13,9 @@ import java.time.LocalDate;
 
 @Getter
 @Entity
-@Table(name = "diary")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "diary", uniqueConstraints = {@UniqueConstraint(columnNames = {"date", "user_id"})})
 public class DiaryEntity extends BaseEntity {
 
     @Id

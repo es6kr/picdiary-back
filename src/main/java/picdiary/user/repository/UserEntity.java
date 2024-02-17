@@ -8,6 +8,7 @@ import picdiary.global.repository.BaseEntity;
 @Data
 @Entity
 @EqualsAndHashCode(callSuper=false)
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "user", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"})})
 public class UserEntity extends BaseEntity {
 

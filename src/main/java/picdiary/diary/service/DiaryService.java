@@ -47,19 +47,20 @@ public class DiaryService {
     public DiaryEntity getDiary(Long userId, String date) {
         String dateString = String.valueOf(date);
         LocalDate localDate = LocalDate.parse(dateString, formatter);
-
-        UserEntity user = userService.findUserById(userId);
-        return diaryRepository.findByUserAndDate(user, localDate)
+        return diaryRepository.findByUserIdAndDate(userId, localDate)
             .orElseThrow(() -> new ApplicationException(DiaryErrorCode.NO_DIARY));
     }
 
     /**
      * 다이어리 수정
+     *
+     * @return 수정된 diary
      */
-    public void updateDiary(Long userId, Long diaryId, DiaryUpdateRequest request) {
+    public DiaryEntity updateDiary(Long userId, Long diaryId, DiaryUpdateRequest request) {
         DiaryEntity savedDiary = findDiaryById(diaryId);
 
         savedDiary.diaryUpdate(userId, request.content());
+        return diaryRepository.save(savedDiary);
     }
 
     /**
