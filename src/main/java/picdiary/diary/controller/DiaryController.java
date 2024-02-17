@@ -1,21 +1,22 @@
 package picdiary.diary.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 import picdiary.diary.dto.request.DiaryCreateRequest;
 import picdiary.diary.dto.request.DiaryUpdateRequest;
 import picdiary.diary.dto.response.GetDiaryResponse;
-import picdiary.diary.service.DiaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import picdiary.diary.repository.DiaryEntity;
+import picdiary.diary.service.DiaryService;
 import picdiary.diary.service.S3Service;
 import picdiary.global.domain.CustomUserDetails;
 import picdiary.global.dto.response.ApplicationResponse;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/diaries")
@@ -24,6 +25,8 @@ public class DiaryController {
 
     private final DiaryService diaryService;
     private final S3Service s3Service;
+
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     /**
      * 다이어리 작성
@@ -52,12 +55,16 @@ public class DiaryController {
     /**
      * 다이어리 정보 조회
      */
-    @GetMapping
-    public ResponseEntity<ApplicationResponse<GetDiaryResponse>> getDiaryInfo(
-            @AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam("date") String date) {
+    @GetMapping("/{date}")
+    public GetDiaryResponse getDiaryInfo(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable("date") String date) {
         Assert.notNull(userDetails, "로그인이 필요합니다.");
-        GetDiaryResponse userDiaryResponse = diaryService.getDiaryInfo(userDetails.userEntity().getId(), date);
-        return ApplicationResponse.data(userDiaryResponse);
+        DiaryEntity diary = diaryService.getDiary(userDetails.userEntity().getId(), date);
+        return new GetDiaryResponse(
+            diary.getId(),
+            diary.getContent(),
+            diary.getDate().format(formatter),
+            s3Service.getUrl(diary.getImageFileName())
+        );
     }
 
     /**

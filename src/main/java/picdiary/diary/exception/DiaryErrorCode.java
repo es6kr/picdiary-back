@@ -6,6 +6,7 @@ import picdiary.global.exception.ErrorCode;
 
 @RequiredArgsConstructor
 public enum DiaryErrorCode implements ErrorCode {
+    IS_NOT_WRITER(HttpStatus.FORBIDDEN, "권한이 없습니다."),
     NO_DIARY(HttpStatus.BAD_REQUEST, "일기 정보가 존재하지 않습니다."),
     EMPTY_DIARY(HttpStatus.BAD_REQUEST, "내용이 비어있습니다.");
 

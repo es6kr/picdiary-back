@@ -30,7 +30,7 @@ public class S3Service {
      * @param prefix 접두사에 {userId}/{date} 붙여서 중복 방지
      * @param multipartFile multipart/form-data 포맷으로 업로드한 이미지 파일
      * @return 버킷명을 제외한 경로를 포함한 파일명
-     * @throws IOException
+     * @throws IOException 업로드 실패
      */
     public String saveFile(String prefix, MultipartFile multipartFile) throws IOException {
         String fileName = prefix + multipartFile.getOriginalFilename();

@@ -1,11 +1,11 @@
 package picdiary.diary.repository;
 
-import picdiary.diary.exception.TodoFolderErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import picdiary.diary.exception.DiaryErrorCode;
 import picdiary.global.exception.ApplicationException;
 import picdiary.global.repository.BaseEntity;
 import picdiary.user.repository.UserEntity;
@@ -50,7 +50,7 @@ public class DiaryEntity extends BaseEntity {
 
     public void validateUserIsWriter(UserEntity user) {
         if (!this.user.isWriter(user)) {
-            throw new ApplicationException(TodoFolderErrorCode.IS_NOT_WRITER);
+            throw new ApplicationException(DiaryErrorCode.IS_NOT_WRITER);
         }
     }
 
