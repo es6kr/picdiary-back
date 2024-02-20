@@ -22,6 +22,10 @@ public class AuthService {
         return userRepository.save(newUser);
     }
 
+    public void deleteUser(UserEntity user) {
+        userRepository.delete(user);
+    }
+
     @Transactional
     public UserEntity findOrCreate(final String email) {
         Optional<UserEntity> result = userRepository.findByEmail(email);

@@ -8,8 +8,8 @@ ADD COLUMN `date` DATE,
 ADD COLUMN `image_file_name` VARCHAR(255),
 ADD COLUMN `updated_at` DATETIME;
 
--- Create ToDo table
-CREATE TABLE IF NOT EXISTS ToDo (
+-- Create todo table
+CREATE TABLE IF NOT EXISTS todo (
   id INT PRIMARY KEY AUTO_INCREMENT,
   content VARCHAR(255) NOT NULL,
   date DATETIME NOT NULL,

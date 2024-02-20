@@ -1,4 +1,4 @@
-package picdiary.global.service;
+package picdiary.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
