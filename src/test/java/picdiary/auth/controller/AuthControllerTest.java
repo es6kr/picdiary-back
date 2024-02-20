@@ -9,8 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import picdiary.auth.dto.AuthRequest;
+import picdiary.auth.dto.AuthResponse;
 import picdiary.auth.service.AuthService;
-import picdiary.global.dto.response.ApplicationResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -43,9 +43,9 @@ public class AuthControllerTest {
                 .content(loginPayload))
             .andExpect(status().isOk())
             .andReturn();
-        var loginResponse = objectMapper.readValue(getLoginActions.getResponse()
-            .getContentAsByteArray(), ApplicationResponse.class);
-        assertEquals(token, loginResponse.getData());
+        var authResponse = objectMapper.readValue(getLoginActions.getResponse()
+            .getContentAsByteArray(), AuthResponse.class);
+        assertEquals(token, authResponse.token());
 
         authService.deleteUser(user);
     }
