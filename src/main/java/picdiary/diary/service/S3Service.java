@@ -23,7 +23,7 @@ public class S3Service {
     }
 
     public URL getUrl(String fileName) {
-        return amazonS3.getUrl(bucket, fileName);
+        return fileName != null? amazonS3.getUrl(bucket, fileName) : null;
     }
 
     /**

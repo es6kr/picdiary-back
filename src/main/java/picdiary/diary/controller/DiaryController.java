@@ -1,7 +1,11 @@
 package picdiary.diary.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +21,7 @@ import picdiary.user.repository.UserEntity;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Stream;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,8 +38,9 @@ public class DiaryController {
      * 다이어리 작성
      */
     @PostMapping
-    public ResponseEntity<ApplicationResponse<Long>> createDiary(UserEntity user, @RequestParam("imageFile") MultipartFile file, @RequestParam("content") String content, @RequestParam("date") String date, @RequestParam("emotion") Diary.Emotion emotion) {
-        DiaryCreateRequest.DiaryCreateRequestBuilder builder = DiaryCreateRequest.builder().content(content).date(date).emotion(emotion);
+    public ResponseEntity<ApplicationResponse<Long>> createDiary(UserEntity user, @RequestParam(value = "imageFile", required = false) MultipartFile file, @RequestParam("content") String content, @RequestParam("date") String date, @RequestParam(value = "emotion", required = false) Diary.Emotion emotion) {
+        DiaryCreateRequest.DiaryCreateRequestBuilder builder = DiaryCreateRequest.builder().content(content).date(date)
+            .emotion(emotion);
 
         /* AWS S3 파일 저장 */
         if (file != null) try {
@@ -46,7 +52,16 @@ public class DiaryController {
         }
 
         Long diaryId = diaryService.createDiary(user.getId(), builder.build());
-        return ApplicationResponse.success(diaryId, "다이어리가 생성되었습니다.");
+        return ApplicationResponse.success(diaryId, "다이어리가 생성되었습니다.").entity();
+    }
+
+    @GetMapping
+    @Operation(description = "다이어리 월별 조회")
+    public ApplicationResponse<Stream<GetDiaryResponse>> getDiaryByMonth(UserEntity user, @Parameter(examples = {@ExampleObject("202402")}) @RequestParam("month") String month) {
+        var diaries = diaryService.getDiaryByMonth(user.getId(), month);
+        var data = diaries.stream().map(diary -> new GetDiaryResponse(diary.getId(), diary.getContent(), diary.getDate()
+            .format(formatter), diary.getEmotion(), s3Service.getUrl(diary.getImageFileName())));
+        return ApplicationResponse.data(data);
     }
 
     /**
@@ -55,14 +70,15 @@ public class DiaryController {
     @GetMapping("/{date}")
     public GetDiaryResponse getDiaryInfo(UserEntity user, @PathVariable("date") String date) {
         DiaryEntity diary = diaryService.getDiary(user.getId(), date);
-        return new GetDiaryResponse(diary.getId(), diary.getContent(), diary.getDate().format(formatter), diary.getEmotion(), s3Service.getUrl(diary.getImageFileName()));
+        return new GetDiaryResponse(diary.getId(), diary.getContent(), diary.getDate()
+            .format(formatter), diary.getEmotion(), s3Service.getUrl(diary.getImageFileName()));
     }
 
     /**
      * 다이어리 수정
      */
     @PatchMapping("/{diaryId}")
-    public ResponseEntity<ApplicationResponse<Long>> updateDiary(UserEntity user, @PathVariable("diaryId") Long diaryId, @RequestBody DiaryUpdateRequest request) {
+    public ApplicationResponse<Long> updateDiary(UserEntity user, @PathVariable("diaryId") Long diaryId, @RequestBody DiaryUpdateRequest request) {
         diaryService.updateDiary(user.getId(), diaryId, request);
         return ApplicationResponse.success(diaryId, "다이어리가 수정되었습니다.");
     }
@@ -71,7 +87,7 @@ public class DiaryController {
      * 다이어리 삭제
      */
     @DeleteMapping("/{diaryId}")
-    public ResponseEntity<ApplicationResponse<Long>> deleteDiary(UserEntity user, @PathVariable("diaryId") Long diaryId) {
+    public ApplicationResponse<Long> deleteDiary(UserEntity user, @PathVariable("diaryId") Long diaryId) {
         diaryService.deleteDiary(user.getId(), diaryId);
         return ApplicationResponse.success(diaryId, "다이어리가 삭제되었습니다.");
     }

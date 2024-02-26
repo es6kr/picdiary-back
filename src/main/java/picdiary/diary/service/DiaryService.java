@@ -14,6 +14,7 @@ import picdiary.user.service.UserService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 
 @Service
 @Transactional
@@ -32,13 +33,7 @@ public class DiaryService {
 
         UserEntity savedUser = userService.findUserById(userId);
 
-        DiaryEntity diaryEntity = new DiaryEntity(
-                request.getContent(),
-                localDate,
-                request.getEmotion(),
-                request.getImageFileName(),
-                savedUser
-        );
+        DiaryEntity diaryEntity = new DiaryEntity(request.getContent(), localDate, request.getEmotion(), request.getImageFileName(), savedUser);
         return diaryRepository.save(diaryEntity).getId();
     }
 
@@ -50,6 +45,14 @@ public class DiaryService {
         LocalDate localDate = LocalDate.parse(dateString, formatter);
         return diaryRepository.findByUserIdAndDate(userId, localDate)
             .orElseThrow(() -> new ApplicationException(DiaryErrorCode.NO_DIARY));
+    }
+
+    /**
+     * 다이어리 월별 조회
+     */
+    public Collection<DiaryEntity> getDiaryByMonth(Long userId, String month) {
+        LocalDate localDate = LocalDate.parse(month + "01", formatter);
+        return diaryRepository.findByUserIdAndDateBetween(userId, localDate, localDate.withDayOfMonth(localDate.lengthOfMonth()));
     }
 
     /**
@@ -75,8 +78,7 @@ public class DiaryService {
     }
 
     private DiaryEntity findDiaryById(Long diaryId) {
-        return diaryRepository.findById(diaryId)
-                .orElseThrow(() -> new ApplicationException(DiaryErrorCode.NO_DIARY));
+        return diaryRepository.findById(diaryId).orElseThrow(() -> new ApplicationException(DiaryErrorCode.NO_DIARY));
     }
 
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import picdiary.auth.dto.AuthRequest;
+import picdiary.auth.dto.AuthResponse;
 import picdiary.auth.service.AuthService;
 import picdiary.global.dto.response.ApplicationResponse;
 import picdiary.user.repository.UserEntity;
@@ -29,20 +30,20 @@ public class AuthController {
      * 로그인
      */
     @PostMapping("/login")
-    public ResponseEntity<ApplicationResponse<Object>> login(@RequestBody AuthRequest request) {
+    public AuthResponse login(@RequestBody AuthRequest request) {
         var auth = new UsernamePasswordAuthenticationToken(request.email(), request.password());
-        authenticationProvider.authenticate(auth);
-        return ApplicationResponse.data(generateBasicToken(request)); // password
-
+        auth = (UsernamePasswordAuthenticationToken) authenticationProvider.authenticate(auth);
+        var user = (UserEntity) auth.getPrincipal();
+        return new AuthResponse(user.getId(), request.email(), generateBasicToken(request));
     }
 
     /**
      * 회원가입
      */
     @PostMapping("/signup")
-    public ResponseEntity<ApplicationResponse<Long>> signUp(@RequestBody AuthRequest request) {
+    public AuthResponse signUp(@RequestBody AuthRequest request) {
         UserEntity user = authService.createUser(request);
-        return ApplicationResponse.success(user.getId(), "회원가입이 완료되었습니다.");
+        return new AuthResponse(user.getId(), request.email(), generateBasicToken(request));
     }
 
     private String generateBasicToken(AuthRequest request) {
