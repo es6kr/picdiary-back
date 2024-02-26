@@ -34,7 +34,8 @@ public class DiaryController {
      */
     @PostMapping
     public ResponseEntity<ApplicationResponse<Long>> createDiary(UserEntity user, @RequestParam("imageFile") MultipartFile file, @RequestParam("content") String content, @RequestParam("date") String date, @RequestParam("emotion") Diary.Emotion emotion) {
-        DiaryCreateRequest.DiaryCreateRequestBuilder builder = DiaryCreateRequest.builder().content(content).date(date).emotion(emotion);
+        DiaryCreateRequest.DiaryCreateRequestBuilder builder = DiaryCreateRequest.builder().content(content).date(date)
+            .emotion(emotion);
 
         /* AWS S3 파일 저장 */
         if (file != null) try {
@@ -46,7 +47,7 @@ public class DiaryController {
         }
 
         Long diaryId = diaryService.createDiary(user.getId(), builder.build());
-        return ApplicationResponse.success(diaryId, "다이어리가 생성되었습니다.");
+        return ApplicationResponse.success(diaryId, "다이어리가 생성되었습니다.").entity();
     }
 
     /**
@@ -55,14 +56,15 @@ public class DiaryController {
     @GetMapping("/{date}")
     public GetDiaryResponse getDiaryInfo(UserEntity user, @PathVariable("date") String date) {
         DiaryEntity diary = diaryService.getDiary(user.getId(), date);
-        return new GetDiaryResponse(diary.getId(), diary.getContent(), diary.getDate().format(formatter), diary.getEmotion(), s3Service.getUrl(diary.getImageFileName()));
+        return new GetDiaryResponse(diary.getId(), diary.getContent(), diary.getDate()
+            .format(formatter), diary.getEmotion(), s3Service.getUrl(diary.getImageFileName()));
     }
 
     /**
      * 다이어리 수정
      */
     @PatchMapping("/{diaryId}")
-    public ResponseEntity<ApplicationResponse<Long>> updateDiary(UserEntity user, @PathVariable("diaryId") Long diaryId, @RequestBody DiaryUpdateRequest request) {
+    public ApplicationResponse<Long> updateDiary(UserEntity user, @PathVariable("diaryId") Long diaryId, @RequestBody DiaryUpdateRequest request) {
         diaryService.updateDiary(user.getId(), diaryId, request);
         return ApplicationResponse.success(diaryId, "다이어리가 수정되었습니다.");
     }
@@ -71,7 +73,7 @@ public class DiaryController {
      * 다이어리 삭제
      */
     @DeleteMapping("/{diaryId}")
-    public ResponseEntity<ApplicationResponse<Long>> deleteDiary(UserEntity user, @PathVariable("diaryId") Long diaryId) {
+    public ApplicationResponse<Long> deleteDiary(UserEntity user, @PathVariable("diaryId") Long diaryId) {
         diaryService.deleteDiary(user.getId(), diaryId);
         return ApplicationResponse.success(diaryId, "다이어리가 삭제되었습니다.");
     }

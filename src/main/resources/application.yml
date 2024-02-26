@@ -13,7 +13,7 @@ aws:
 spring:
   datasource:
     tomcat:
-      max-active: 5
+      max-active: 4
   profiles:
     active: local
   # Flyway 설정

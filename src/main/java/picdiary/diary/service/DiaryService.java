@@ -32,13 +32,7 @@ public class DiaryService {
 
         UserEntity savedUser = userService.findUserById(userId);
 
-        DiaryEntity diaryEntity = new DiaryEntity(
-                request.getContent(),
-                localDate,
-                request.getEmotion(),
-                request.getImageFileName(),
-                savedUser
-        );
+        DiaryEntity diaryEntity = new DiaryEntity(request.getContent(), localDate, request.getEmotion(), request.getImageFileName(), savedUser);
         return diaryRepository.save(diaryEntity).getId();
     }
 
@@ -75,8 +69,7 @@ public class DiaryService {
     }
 
     private DiaryEntity findDiaryById(Long diaryId) {
-        return diaryRepository.findById(diaryId)
-                .orElseThrow(() -> new ApplicationException(DiaryErrorCode.NO_DIARY));
+        return diaryRepository.findById(diaryId).orElseThrow(() -> new ApplicationException(DiaryErrorCode.NO_DIARY));
     }
 
 }
