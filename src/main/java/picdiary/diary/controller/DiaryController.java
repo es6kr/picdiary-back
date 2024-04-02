@@ -38,7 +38,7 @@ public class DiaryController {
      * 다이어리 작성
      */
     @PostMapping
-    public ResponseEntity<ApplicationResponse<Long>> createDiary(UserEntity user, @RequestParam(value = "imageFile", required = false) MultipartFile file, @RequestParam("content") String content, @RequestParam("date") String date, @RequestParam(value = "emotion", required = false) Diary.Emotion emotion) {
+    public ResponseEntity<ApplicationResponse<Long>> createDiary(@Parameter(hidden = true) UserEntity user, @RequestParam(value = "imageFile", required = false) MultipartFile file, @RequestParam("content") String content, @RequestParam("date") String date, @RequestParam(value = "emotion", required = false) Diary.Emotion emotion) {
         DiaryCreateRequest.DiaryCreateRequestBuilder builder = DiaryCreateRequest.builder().content(content).date(date)
             .emotion(emotion);
 
@@ -57,7 +57,7 @@ public class DiaryController {
 
     @GetMapping
     @Operation(description = "다이어리 월별 조회")
-    public ApplicationResponse<Stream<GetDiaryResponse>> getDiaryByMonth(UserEntity user, @Parameter(examples = {@ExampleObject("202402")}) @RequestParam("month") String month) {
+    public ApplicationResponse<Stream<GetDiaryResponse>> getDiaryByMonth(@Parameter(hidden = true) UserEntity user, @Parameter(examples = {@ExampleObject("202402")}) @RequestParam("month") String month) {
         var diaries = diaryService.getDiaryByMonth(user.getId(), month);
         var data = diaries.stream().map(diary -> new GetDiaryResponse(diary.getId(), diary.getContent(), diary.getDate()
             .format(formatter), diary.getEmotion(), s3Service.getUrl(diary.getImageFileName())));
@@ -68,7 +68,7 @@ public class DiaryController {
      * 다이어리 정보 조회
      */
     @GetMapping("/{date}")
-    public GetDiaryResponse getDiaryInfo(UserEntity user, @PathVariable("date") String date) {
+    public GetDiaryResponse getDiaryInfo(@Parameter(hidden = true) UserEntity user, @PathVariable("date") String date) {
         DiaryEntity diary = diaryService.getDiary(user.getId(), date);
         return new GetDiaryResponse(diary.getId(), diary.getContent(), diary.getDate()
             .format(formatter), diary.getEmotion(), s3Service.getUrl(diary.getImageFileName()));
@@ -78,7 +78,7 @@ public class DiaryController {
      * 다이어리 수정
      */
     @PatchMapping("/{diaryId}")
-    public ApplicationResponse<Long> updateDiary(UserEntity user, @PathVariable("diaryId") Long diaryId, @RequestBody DiaryUpdateRequest request) {
+    public ApplicationResponse<Long> updateDiary(@Parameter(hidden = true) UserEntity user, @PathVariable("diaryId") Long diaryId, @RequestBody DiaryUpdateRequest request) {
         diaryService.updateDiary(user.getId(), diaryId, request);
         return ApplicationResponse.success(diaryId, "다이어리가 수정되었습니다.");
     }
@@ -87,7 +87,7 @@ public class DiaryController {
      * 다이어리 삭제
      */
     @DeleteMapping("/{diaryId}")
-    public ApplicationResponse<Long> deleteDiary(UserEntity user, @PathVariable("diaryId") Long diaryId) {
+    public ApplicationResponse<Long> deleteDiary(@Parameter(hidden = true) UserEntity user, @PathVariable("diaryId") Long diaryId) {
         diaryService.deleteDiary(user.getId(), diaryId);
         return ApplicationResponse.success(diaryId, "다이어리가 삭제되었습니다.");
     }

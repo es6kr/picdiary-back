@@ -1,5 +1,6 @@
 package picdiary.todo.controller;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class ToDoController {
      * 투두리스트 작성
      */
     @PostMapping("/todos")
-    public ApplicationResponse<Long> createToDo(UserEntity user, @RequestBody ToDoCreateRequest request) {
+    public ApplicationResponse<Long> createToDo(@Parameter(hidden = true) UserEntity user, @RequestBody ToDoCreateRequest request) {
         Long toDoId = toDoService.createToDo(user.getId(), request);
         return ApplicationResponse.success(toDoId, "투두리스트가 생성되었습니다.");
     }
@@ -36,7 +37,7 @@ public class ToDoController {
      * 투두리스트 정보 조회
      */
     @GetMapping("/diaries/{date}/todos")
-    public ApplicationResponse<List<ToDoEntity>> getToDoList(UserEntity user, @PathVariable("date") String date) {
+    public ApplicationResponse<List<ToDoEntity>> getToDoList(@Parameter(hidden = true) UserEntity user, @PathVariable("date") String date) {
         DiaryEntity diary = diaryService.getDiary(user.getId(), date);
         return ApplicationResponse.data(diary.getToDoList());
     }
@@ -45,7 +46,7 @@ public class ToDoController {
      * 투두리스트 수정
      */
     @PatchMapping("/todos/{toDoId}")
-    public ApplicationResponse<ToDoEntity> updateToDo(UserEntity user, @PathVariable("toDoId") Long toDoId,
+    public ApplicationResponse<ToDoEntity> updateToDo(@Parameter(hidden = true) UserEntity user, @PathVariable("toDoId") Long toDoId,
             @RequestBody ToDoUpdateRequest request) {
         ToDoEntity toDo = toDoService.updateToDo(user.getId(), toDoId, request);
         return ApplicationResponse.data(toDo, "투두리스트가 수정되었습니다.", null);
@@ -55,7 +56,7 @@ public class ToDoController {
      * 투두리스트 삭제
      */
     @DeleteMapping("/todos/{toDoId}")
-    public ApplicationResponse<Long> deleteToDo(UserEntity user, @PathVariable("toDoId") Long toDoId) {
+    public ApplicationResponse<Long> deleteToDo(@Parameter(hidden = true) UserEntity user, @PathVariable("toDoId") Long toDoId) {
         toDoService.deleteToDo(user.getId(), toDoId);
         return ApplicationResponse.success(toDoId, "투두리스트가 삭제되었습니다.");
     }
