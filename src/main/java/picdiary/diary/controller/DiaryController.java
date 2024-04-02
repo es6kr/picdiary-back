@@ -88,6 +88,8 @@ public class DiaryController {
      */
     @DeleteMapping("/{diaryId}")
     public ApplicationResponse<Long> deleteDiary(@Parameter(hidden = true) UserEntity user, @PathVariable("diaryId") Long diaryId) {
+        DiaryEntity diary = diaryService.findDiaryById(diaryId);
+        s3Service.deleteImage(diary.getImageFileName());
         diaryService.deleteDiary(user.getId(), diaryId);
         return ApplicationResponse.success(diaryId, "다이어리가 삭제되었습니다.");
     }

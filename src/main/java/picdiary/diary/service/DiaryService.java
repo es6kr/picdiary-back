@@ -72,12 +72,18 @@ public class DiaryService {
      */
     public void deleteDiary(Long userId, Long diaryId) {
         DiaryEntity savedDiary = findDiaryById(diaryId);
+        deleteDiary(userId, savedDiary);
+    }
 
+    /**
+     * 다이어리 삭제
+     */
+    public void deleteDiary(Long userId, DiaryEntity savedDiary) {
         savedDiary.validateUserIsWriter(userId);
         diaryRepository.deleteById(savedDiary.getId());
     }
 
-    private DiaryEntity findDiaryById(Long diaryId) {
+    public DiaryEntity findDiaryById(Long diaryId) {
         return diaryRepository.findById(diaryId).orElseThrow(() -> new ApplicationException(DiaryErrorCode.NO_DIARY));
     }
 
