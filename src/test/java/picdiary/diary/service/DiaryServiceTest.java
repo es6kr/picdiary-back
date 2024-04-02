@@ -28,7 +28,7 @@ public class DiaryServiceTest {
 
     @Test
     public void testDiary() {
-        DiaryCreateRequest createRequest = DiaryCreateRequest.builder().date(date).emotion(emotion).build();
+        DiaryCreateRequest createRequest = DiaryCreateRequest.builder().content("test").date(date).emotion(emotion).build();
         diaryId = diaryService.createDiary(userId, createRequest);
         assertNotNull(diaryId);
 

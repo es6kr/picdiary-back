@@ -26,3 +26,5 @@ jobs:
 
       - name: Run Gradle Test
         run: ./gradlew test
+        env:
+          SPRING_PROFILES_ACTIVE: dev
