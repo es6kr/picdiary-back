@@ -8,7 +8,7 @@ import picdiary.global.exception.ErrorCode;
 public enum DiaryErrorCode implements ErrorCode {
     IS_NOT_WRITER(HttpStatus.FORBIDDEN, "권한이 없습니다."),
     NO_DIARY(HttpStatus.BAD_REQUEST, "일기 정보가 존재하지 않습니다."),
-    EMPTY_DIARY(HttpStatus.BAD_REQUEST, "내용이 비어있습니다.");
+    SAVE_ERROR(HttpStatus.BAD_REQUEST, "파일 저장 중 오류가 발생했습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
