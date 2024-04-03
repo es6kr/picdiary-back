@@ -63,7 +63,7 @@ public class DiaryService {
     public DiaryEntity updateDiary(Long userId, Long diaryId, DiaryUpdateRequest request) {
         DiaryEntity savedDiary = findDiaryById(diaryId);
 
-        savedDiary.diaryUpdate(userId, request.content(), request.emotion());
+        savedDiary.diaryUpdate(userId, request);
         return diaryRepository.save(savedDiary);
     }
 

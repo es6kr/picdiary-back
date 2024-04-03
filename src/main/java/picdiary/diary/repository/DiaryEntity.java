@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import picdiary.diary.domain.Diary;
+import picdiary.diary.dto.request.DiaryUpdateRequest;
 import picdiary.diary.exception.DiaryErrorCode;
 import picdiary.global.exception.ApplicationException;
 import picdiary.global.repository.BaseEntity;
@@ -51,10 +52,17 @@ public class DiaryEntity extends BaseEntity {
         this.user = user;
     }
 
-    public void diaryUpdate(long userId, String content, Diary.Emotion emotion) {
+    public void diaryUpdate(long userId, DiaryUpdateRequest request) {
         validateUserIsWriter(userId);
-        this.content = content;
-        this.emotion = emotion;
+        if (request.getContent() != null) {
+            this.content = request.getContent();
+        }
+        if (request.getEmotion() != null) {
+            this.emotion = request.getEmotion();
+        }
+        if (request.getImageFileName() != null) {
+            this.imageFileName = request.getImageFileName();
+        }
     }
 
     public void validateUserIsWriter(long userId) {

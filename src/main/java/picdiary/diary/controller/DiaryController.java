@@ -5,23 +5,25 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import picdiary.diary.domain.Diary;
 import picdiary.diary.dto.request.DiaryCreateRequest;
 import picdiary.diary.dto.request.DiaryUpdateRequest;
 import picdiary.diary.dto.response.GetDiaryResponse;
+import picdiary.diary.exception.DiaryErrorCode;
 import picdiary.diary.repository.DiaryEntity;
 import picdiary.diary.service.DiaryService;
 import picdiary.diary.service.S3Service;
 import picdiary.global.dto.response.ApplicationResponse;
+import picdiary.global.exception.ApplicationException;
 import picdiary.user.repository.UserEntity;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Stream;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,21 +39,33 @@ public class DiaryController {
     /**
      * 다이어리 작성
      */
-    @PostMapping
-    public ResponseEntity<ApplicationResponse<Long>> createDiary(@Parameter(hidden = true) UserEntity user, @RequestParam(value = "imageFile", required = false) MultipartFile file, @RequestParam("content") String content, @RequestParam("date") String date, @RequestParam(value = "emotion", required = false) Diary.Emotion emotion) {
-        DiaryCreateRequest.DiaryCreateRequestBuilder builder = DiaryCreateRequest.builder().content(content).date(date)
-            .emotion(emotion);
+    @PostMapping(consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApplicationResponse<Long>> createDiary(@Parameter(hidden = true) UserEntity user, @RequestBody DiaryCreateRequest request) {
+        Long diaryId = diaryService.createDiary(user.getId(), request);
+        return ApplicationResponse.success(diaryId, "다이어리가 생성되었습니다.").entity();
+    }
 
-        /* AWS S3 파일 저장 */
+    /**
+     * AWS S3 파일 저장
+     */
+    private void createDiaryImageFile(UserEntity user, DiaryUpdateRequest request, String date) {
+        var file = request.getImageFile();
         if (file != null) try {
             String prefix = String.format("%s/%s", user.getId(), date);
-            builder.imageFileName(s3Service.saveFile(prefix, file));
+            request.setImageFileName(s3Service.saveFile(prefix, file));
         } catch (IOException e) {
             // 파일 저장 중 오류 발생 시 처리
-            return ApplicationResponse.error("파일 저장 중 오류가 발생했습니다.", null);
+            throw new ApplicationException(DiaryErrorCode.SAVE_ERROR);
         }
+    }
 
-        Long diaryId = diaryService.createDiary(user.getId(), builder.build());
+    /**
+     * Multipart 다이어리 작성
+     */
+    @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApplicationResponse<Long>> createForm(@Parameter(hidden = true) UserEntity user, @ModelAttribute DiaryCreateRequest request) {
+        createDiaryImageFile(user, request, request.getDate());
+        Long diaryId = diaryService.createDiary(user.getId(), request);
         return ApplicationResponse.success(diaryId, "다이어리가 생성되었습니다.").entity();
     }
 
@@ -77,8 +91,19 @@ public class DiaryController {
     /**
      * 다이어리 수정
      */
-    @PatchMapping("/{diaryId}")
+    @PatchMapping(value = "/{diaryId}", consumes = APPLICATION_JSON_VALUE)
     public ApplicationResponse<Long> updateDiary(@Parameter(hidden = true) UserEntity user, @PathVariable("diaryId") Long diaryId, @RequestBody DiaryUpdateRequest request) {
+        diaryService.updateDiary(user.getId(), diaryId, request);
+        return ApplicationResponse.success(diaryId, "다이어리가 수정되었습니다.");
+    }
+
+    /**
+     * 다이어리 수정
+     */
+    @PatchMapping(value = "/{diaryId}", consumes = MULTIPART_FORM_DATA_VALUE)
+    public ApplicationResponse<Long> updateForm(@Parameter(hidden = true) UserEntity user, @PathVariable("diaryId") Long diaryId, @ModelAttribute DiaryUpdateRequest request) {
+        var diary = diaryService.findDiaryById(diaryId);
+        createDiaryImageFile(user, request, diary.getDate().format(formatter));
         diaryService.updateDiary(user.getId(), diaryId, request);
         return ApplicationResponse.success(diaryId, "다이어리가 수정되었습니다.");
     }
